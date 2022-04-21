@@ -1,0 +1,26 @@
+---
+#
+# Rootless Podman Settings
+# https://wiki.archlinux.org/index.php/Podman#Rootless_Podman
+#
+- name: Configure /etc/subuid
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/subuid
+    line: "{{ ansible_user }}:165536:65536"
+    create: true
+    mode: 0644
+  register: subuid
+
+- name: Configure /etc/subgid
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/subgid
+    line: "{{ ansible_user }}:165536:65536"
+    create: true
+    mode: 0644
+  register: subgid
+
+- name: Run Podman system migrate
+  command: podman system migrate
+  when: subuid.changed or subgid.changed

@@ -1,0 +1,20 @@
+---
+galaxy_info:
+  author: Andrea Brandi
+  description: Rootless container orchestration with Podman and systemd services
+  license: MIT
+
+  min_ansible_version: 2.1
+
+  platforms:
+    - name: ArchLinux
+      versions:
+        - all
+
+  galaxy_tags:
+    - system
+    - systemd
+    - podman
+    - docker
+
+dependencies: []

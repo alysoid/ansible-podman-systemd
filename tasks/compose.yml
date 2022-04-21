@@ -1,0 +1,25 @@
+---
+- name: Check for existing systemd unit file
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['user_dir'] }}/.config/systemd/user/{{ container.name }}.service"
+  register: systemd_unit_file
+
+# Stop current container if already managed by systemd
+- name: "Stop and disable user {{ container.name }}.service"
+  ansible.builtin.systemd:
+    name: "{{ container.name }}.service"
+    scope: user
+    enabled: false
+    state: stopped
+  when: systemd_unit_file.stat.exists
+  failed_when: false
+
+- name: Create/Remove {{ container.name }} container
+  include_tasks: "{{ playbook_dir }}/compose/{{ container.name | lower }}.yml"
+
+# Run when the container state is set to `absent`
+- name: "Remove {{ container.name }} systemd unit file"
+  ansible.builtin.file:
+    path: "{{ ansible_facts['user_dir'] }}/.config/systemd/user/{{ container.name }}.service"
+    state: absent
+  when: remove_systemd_unit

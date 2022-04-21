@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+# See systemd.timer(5) for details
+
+[Unit]
+Description=Podman auto-update timer
+
+[Timer]
+OnCalendar={{ podman_autoupdate_timer }}
+Persistent=true
+
+[Install]
+WantedBy=timers.target

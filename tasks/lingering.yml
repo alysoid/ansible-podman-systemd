@@ -1,0 +1,15 @@
+---
+#
+# Auto-starting rootless containers using systemd at boot without login (and running after logout)
+# https://wiki.archlinux.org/index.php/Systemd/User#Automatic_start-up_of_systemd_user_instances
+# https://docs.podman.io/en/latest/markdown/podman-generate-systemd.1.html
+#
+- name: Check user lingering status
+  ansible.builtin.stat:
+    path: /var/lib/systemd/linger/{{ ansible_user }}
+  register: user_lingering
+
+- name: Enable automatic start-up of systemd user services
+  become: true
+  ansible.builtin.command: "loginctl enable-linger {{ ansible_user }}"
+  when: not user_lingering.stat.exists

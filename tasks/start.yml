@@ -1,0 +1,7 @@
+---
+- name: "Start and enable user {{ container.name }}.service"
+  ansible.builtin.systemd:
+    name: "{{ container.name }}.service"
+    scope: user
+    enabled: true
+    state: started

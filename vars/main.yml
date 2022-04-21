@@ -1,0 +1,15 @@
+---
+# Containers are actually managed by systemd that removes them after they're stopped.
+# We assume a container can be either `created` after the service is stopped or `absent`.
+container_state: "{{ (item.state in ['created', 'started' , 'present' ]) | ternary('created', 'absent') }}"
+
+# Default values for containers
+container_defaults:
+  state: "{{ container_state }}"
+  started: no
+  frontend: no
+  labels: "{{ container_labels }}"
+  systemd: "{{ generate_systemd }}"
+
+# Combine default values with user defined settings
+container: "{{ container_defaults | combine(item) }}"

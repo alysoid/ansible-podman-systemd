@@ -1,0 +1,31 @@
+---
+#
+# Auto-updating containers using systemd
+# View logs: `journalctl --user-unit podman-auto-update`
+# View timer: `systemctl --user list-timers --all`
+# http://docs.podman.io/en/latest/markdown/podman-auto-update.1.html
+#
+- block:
+    - name: Create custom podman-auto-update timer
+      become: true
+      ansible.builtin.template:
+        src: podman-auto-update.timer.j2
+        dest: /etc/systemd/user/podman-auto-update.timer
+        mode: 0644
+
+    - name: Enable podman auto update timer
+      ansible.builtin.systemd:
+        name: podman-auto-update.timer
+        scope: user
+        state: started
+        enabled: true
+  when: podman_autoupdate
+
+- block:
+    - name: Disable podman auto update timer
+      ansible.builtin.systemd:
+        name: podman-auto-update.timer
+        scope: user
+        state: stopped
+        enabled: false
+  when: not podman_autoupdate
